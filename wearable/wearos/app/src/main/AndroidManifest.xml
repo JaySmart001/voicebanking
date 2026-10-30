@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <!-- Mic access for the "speak the phrase instead" fallback approval path. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.DeviceDefault">
+
+        <!-- Declares this as a standalone-capable Wear OS app that also
+             ships a companion phone app; required for Play Store listing
+             of wear-paired apps. Not needed for sideloading/dev builds. -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".VoiceApproveActivity"
+            android:exported="false"
+            android:taskAffinity=""
+            android:showOnLockScreen="true" />
+
+        <!-- Receives DataLayer messages sent from the paired phone app
+             (path: /voicebank/verify-request) and surfaces the approval UI. -->
+        <service
+            android:name=".VoiceApproveListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:scheme="wear"
+                    android:host="*"
+                    android:pathPrefix="/voicebank" />
+            </intent-filter>
+        </service>
+
+    </application>
+</manifest>

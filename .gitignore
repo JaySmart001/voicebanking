@@ -1,0 +1,30 @@
+node_modules/
+dist/
+build/
+.next/
+out/
+*.log
+.DS_Store
+.env
+.env.local
+server/data/db.json
+
+# Android
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/local.properties
+wearable/wearos/.gradle/
+wearable/wearos/build/
+wearable/wearos/app/build/
+
+# iOS
+mobile/ios/Pods/
+mobile/ios/build/
+*.xcuserstate
+xcuserdata/
+DerivedData/
+
+# Expo
+mobile/.expo/
+mobile/.expo-shared/
