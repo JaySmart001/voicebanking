@@ -1,5 +1,7 @@
 # VoiceBank
 
+[![CI](https://github.com/JaySmart001/voicebanking/actions/workflows/ci.yml/badge.svg)](https://github.com/JaySmart001/voicebanking/actions/workflows/ci.yml)
+
 A cross-platform **voice-authenticated mobile banking** demo: web app, React
 Native mobile app with real native Android (Kotlin) and iOS (Swift) modules,
 and a smartwatch companion scaffold (Wear OS + watchOS). Built as a portfolio
