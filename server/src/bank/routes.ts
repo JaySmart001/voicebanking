@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Account, Transaction, TransferRequest, TransferResponse } from "@voicebanking/shared";
+import { logAudit } from "../audit/log";
 import { readDb, writeDb } from "../db";
 import { AuthedRequest, requireAuth } from "../middleware/requireAuth";
 
@@ -39,11 +40,15 @@ bankRouter.get("/transactions", (req: AuthedRequest, res) => {
 
 bankRouter.post("/transfer", (req: AuthedRequest, res) => {
   const { fromAccountId, toAccountId, amount, memo } = req.body as TransferRequest;
+  const { userId, username } = req.user!;
+  const ip = req.ip ?? "";
 
   if (!fromAccountId || !toAccountId || typeof amount !== "number" || amount <= 0) {
+    logAudit({ action: "transfer", result: "failure", userId, username, ip, reason: "Invalid transfer request" });
     return res.status(400).json({ error: "Invalid transfer request" } satisfies { error: string });
   }
   if (fromAccountId === toAccountId) {
+    logAudit({ action: "transfer", result: "failure", userId, username, ip, reason: "Cannot transfer to the same account" });
     return res.status(400).json({ error: "Cannot transfer to the same account" });
   }
 
@@ -53,9 +58,11 @@ bankRouter.post("/transfer", (req: AuthedRequest, res) => {
   const to = owned.find((a) => a.id === toAccountId);
 
   if (!from || !to) {
+    logAudit({ action: "transfer", result: "failure", userId, username, ip, reason: "Account not found" });
     return res.status(404).json({ error: "Account not found" } satisfies { error: string });
   }
   if (from.balance < amount) {
+    logAudit({ action: "transfer", result: "failure", userId, username, ip, reason: "Insufficient funds" });
     const body: TransferResponse = { success: false, reason: "Insufficient funds" };
     return res.status(200).json(body);
   }
@@ -84,6 +91,8 @@ bankRouter.post("/transfer", (req: AuthedRequest, res) => {
   );
 
   writeDb(db);
+
+  logAudit({ action: "transfer", result: "success", userId, username, ip });
 
   const body: TransferResponse = { success: true, accounts: owned.map(toPublicAccount) };
   res.json(body);

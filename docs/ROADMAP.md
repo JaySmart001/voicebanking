@@ -22,6 +22,13 @@ production:
    phone to `/api/auth/verify`, including a tap-to-approve path and a
    watch-captured voice sample path.
 6. **Rate limiting, anomaly detection, audit logging** on the backend.
+   - [x] Rate limiting on `/api/auth/challenge`, `/enroll`, and `/verify`
+     (per-IP, plus per-account on `/verify`) via `express-rate-limit`,
+     returning 429 with a clear JSON error.
+   - [x] Structured audit logging for enroll, verify, and transfer attempts
+     (pass and fail) - timestamp, user id, action, result, IP; never raw
+     audio, voiceprints, or tokens. See `server/src/audit/log.ts`.
+   - [ ] Anomaly detection - not started.
 7. **Accessibility fallback** - a non-voice path (PIN/passkey) for users who
    can't or don't want to use voice auth, required for any real product.
 8. **Security review** before any of this goes near real accounts or money.
